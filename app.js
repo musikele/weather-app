@@ -1,37 +1,34 @@
 
-// const yargs = require('yargs');
+const yargs = require('yargs');
 
-// const geocode = require('./geocode/geocode');
+const geocode = require('./geocode/geocode');
+const weather = require('./weather/weather');
 
-// const argv = yargs.options({
-//   a: {
-//     demand: true,
-//     alias: 'address',
-//     describe: 'Address to fetch weather for',
-//     string: true
-//   }
-// }).help()
-// .alias('help', 'h')
-// .argv;
+const argv = yargs.options({
+  a: {
+    demand: true,
+    alias: 'address',
+    describe: 'Address to fetch weather for',
+    string: true
+  }
+}).help()
+  .alias('help', 'h')
+  .argv;
 
-// geocode.geocodeAddress(argv.address, (errorMessage, results) => {
-//   if (errorMessage) {
-//     console.log(errorMessage);
-//   }
-//   else {
-//     console.log(JSON.stringify(results,undefined, 2));  
-//   }
-// });
-
-const request = require('request');
-
-request({
-  url: 'https://api.darksky.net/forecast/1726dc0636227833931e3bd669d1c44a/40.7722987,14.8396248?lang=it&units=si',
-  json: true
-}, (error, response, body) => {
-  if (!error && response.statusCode === 200) {
-    console.log(body.currently.temperature);
-  } else {
-    console.log('Unable to connect to weather server');
+geocode.geocodeAddress(argv.address, (errorMessage, results) => {
+  if (errorMessage) {
+    console.log(errorMessage);
+  }
+  else {
+    //console.log(JSON.stringify(results, undefined, 2));
+    weather.getWeather(results.latitude, results.longitude, (err, res) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log(`Attualmente ci sono ${res.temperature}°, la temperatura apparente è di ${res.apparentTemperature}°.`);
+        console.log(`Le previsioni per oggi: ${res.hourlySummary}`);
+        console.log(`Le previsioni per questa settimana: ${res.dailySumary}`);
+      }
+    });
   }
 });
