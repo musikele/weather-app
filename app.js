@@ -4,6 +4,7 @@ const yargs = require('yargs');
 const geocode = require('./geocode/geocode');
 const weather = require('./weather/weather');
 
+//arguments parsing 
 const argv = yargs.options({
   a: {
     demand: true,
@@ -15,12 +16,13 @@ const argv = yargs.options({
   .alias('help', 'h')
   .argv;
 
+//chiedo a Google di darmi, a partire da un indirizzo, le coordinate geografiche
 geocode.geocodeAddress(argv.address, (errorMessage, results) => {
   if (errorMessage) {
     console.log(errorMessage);
   }
   else {
-    //console.log(JSON.stringify(results, undefined, 2));
+    //Faccio la chiamata a weather.js per avere le previsioni meteo
     weather.getWeather(results.latitude, results.longitude, (err, res) => {
       if (err) {
         console.log(err);
